@@ -25,4 +25,10 @@ if __name__ == "__main__":
     tail = tail_finder(lista)
 
     instances_list = [EpisodeFilename(i, head, shift, tail, splitter) for i in lista]
-    make_change(instances_list, kodi=False)
+
+    prompt = input("With additional Kodi changes?[y/n]\n")
+    if prompt == "y":
+        decision = True
+    else:
+        decision = False
+    make_change(instances_list, kodi=decision)

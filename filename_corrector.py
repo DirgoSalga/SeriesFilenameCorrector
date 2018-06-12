@@ -9,6 +9,9 @@ import os
 
 
 class EpisodeFilename:
+    """This is a class that breaks the name of a typical video file into its different components.
+    This makes it much easier to modify and the process should actually be more or less automatic."""
+
     def __init__(self, filestring, head, shift, tail, splitter):
         self.original = filestring  # string
         self.key1 = head  # string
@@ -35,14 +38,38 @@ class EpisodeFilename:
         return new
 
 
+def episode_list_maker(direct):
+    """"This function decides what the most common format in the directory is.
+    And makes a list of the files of this format.
+    WARNING: It only works if the episodes have all the same format."""
+    bruto = os.listdir(direct)
+    formats_dict = {}
+    for a in bruto:
+        formato = a.split(".")[-1]
+        formats_dict[formato] = formats_dict.get(formato, 0) + 1
+    lista_formatos = formats_dict.items()
+    count = []
+    for _, c in lista_formatos:
+        count.append(c)
+    max_count = max(count)
+    for _, c in lista_formatos:
+        if c == max_count:
+            vid_format = _
+    netto = []
+    for elemento in bruto:
+        if elemento.split(".")[-1] == vid_format:
+            netto.append(elemento)
+    return netto
+
+
 def sep_finder(filelist):
-    """Function gets a list of filenames and figures out which method separates the words.
-    Among the possibilities the following characters are considered: dot, score, underscore and space."""
+    """Function gets a list of filenames and figures out which character separates the words.
+    Among the possibilities the following characters are considered: dot, space, dash  and underscore."""
     sep_sym_dict = {0: ".", 1: " ", 2: "-", 3: "_"}
     ai = bi = ci = di = 0
     while ai < 3 and bi < 3 and ci < 3 and di < 3:
         for name in filelist:
-            a = len(name.split(".")) - 1
+            a = len(name.split(".")) - 1  # Format always gets the last item of the separation, it shouldn't count.
             b = len(name.split(" "))
             c = len(name.split("-"))
             d = len(name.split("_"))
@@ -71,8 +98,8 @@ def header_finder(file_list):
         a = file_list[i - 1].split(sep_symbol)
         b = file_list[i].split(sep_symbol)
 
-        """This is the index of the last word that is identical in all filenames. Normally is the next one is the one I'm
-        really interested in"""
+        """This is the index of the last word that is identical in all filenames. Normally is the next one is the one I
+        am really interested in"""
         same_to_index = 0
 
         if len(a) >= len(b):
@@ -138,27 +165,6 @@ def tail_finder(file_list):
                     break
     result = file_list[1].split(sep_symbol)[::-1][same_to_index]
     return result
-
-
-def episode_list_maker(direct):
-    bruto = os.listdir(direct)
-    formats_dict = {}
-    for a in bruto:
-        formato = a.split(".")[-1]
-        formats_dict[formato] = formats_dict.get(formato, 0) + 1
-    lista_formatos = formats_dict.items()
-    count = []
-    for _, c in lista_formatos:
-        count.append(c)
-    max_count = max(count)
-    for _, c in lista_formatos:
-        if c == max_count:
-            vid_format = _
-    netto = []
-    for elemento in bruto:
-        if elemento.split(".")[-1] == vid_format:
-            netto.append(elemento)
-    return netto
 
 
 def kodi_change(original, season):

@@ -8,10 +8,12 @@ from sys import argv
 import os
 from filename_corrector import *
 
-platzhalter = lambda pfad:str(pfad)
+
+def platzhalter(pfad):
+    return str(pfad)
+
 
 if __name__ == "__main__":
-
     test = platzhalter(*argv[1:])
 
     os.chdir(test)
@@ -23,4 +25,4 @@ if __name__ == "__main__":
     tail = tail_finder(lista)
 
     instances_list = [EpisodeFilename(i, head, shift, tail, splitter) for i in lista]
-    make_change(instances_list, kodi=True)
+    make_change(instances_list, kodi=False)

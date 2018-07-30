@@ -26,9 +26,16 @@ if __name__ == "__main__":
 
     instances_list = [EpisodeFilename(i, head, shift, tail, splitter) for i in lista]
 
-    prompt = input("With additional Kodi changes?[y/n]\n")
-    if prompt == "y":
+    prompt1 = input("With additional Kodi changes?[y/n]\n")
+    prompt2 = input("Do you wish to retrieve the names from an online database?[y/n]\n")
+    if prompt1 == "y":
         decision = True
     else:
         decision = False
-    make_change(instances_list, kodi=decision)
+
+    if prompt2 == "y":
+        dbbool = True
+    else:
+        dbool = False
+
+    make_change(instances_list, kodi=decision, dbrequest=dbbool)

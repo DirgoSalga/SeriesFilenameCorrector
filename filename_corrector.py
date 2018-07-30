@@ -6,6 +6,8 @@ Created on Tue May 29 15:51:40 2018
 """
 
 import os
+from Search import mdatabase_search
+from EpisodeListExtraction import site_scanner
 
 
 class EpisodeFilename:
@@ -18,7 +20,7 @@ class EpisodeFilename:
         self.key2 = tail  # string
         self.shift = shift  # int
         self.sep = splitter  # str
-        self.format = self.original.split(".")[-1]  # str
+        self.formato = self.original.split(".")[-1]  # str
 
     def filename_modifier(self):
         ind1 = self.original.find(self.key1) + self.shift
@@ -34,7 +36,7 @@ class EpisodeFilename:
                 new += " " + word
             else:
                 new += " " + word.capitalize()
-        new += "%s.%s" % (words[-1], self.format)
+        new += "%s.%s" % (words[-1], self.formato)
         return new
 
 
@@ -181,29 +183,67 @@ def kodi_change(original, season):
     return new
 
 
-def make_change(episode_list, kodi=False):
+def make_change(episode_list, kodi=False, dbrequest=False):
     """The function takes a list of instances of the EpisodeFilename class"""
-    if kodi == False:
-        for episode in episode_list:
-            print("rename ", episode.original, "\t\t", episode.filename_modifier())
-        prompt = input("Do you wish to make this filename changes? [y/n]")
-        if prompt == "y":
-            if os.name == "nt":
-                for episode in episode_list:
-                    os.system("rename \"%s\" \"%s\"" % (episode.original, episode.filename_modifier()))
-            elif os.name == "posix":
-                for episode in episode_list:
-                    os.system("mv \"%s\" \"%s\"" % (episode.original, episode.filename_modifier()))
-    elif kodi:
-        season = int(input("Season? [1,2,3,...]"))
-        for episode in episode_list:
-            print("rename ", episode.original, "\t\t", kodi_change(episode.filename_modifier(), season))
-        prompt = input("Do you wish to make this filename changes? [y/n]")
-        if prompt == "y":
-            if os.name == "nt":
-                for episode in episode_list:
-                    os.system(
-                        "rename \"%s\" \"%s\"" % (episode.original, kodi_change(episode.filename_modifier(), season)))
-            elif os.name == "posix":
-                for episode in episode_list:
-                    os.system("mv \"%s\" \"%s\"" % (episode.original, kodi_change(episode.filename_modifier(), season)))
+
+    if not dbrequest:
+        if not kodi:
+            for episode in episode_list:
+                print("rename ", episode.original, "\t\t", episode.filename_modifier())
+            prompt = input("Do you wish to make this filename changes? [y/n]")
+            if prompt == "y":
+                if os.name == "nt":
+                    for episode in episode_list:
+                        os.system("rename \"%s\" \"%s\"" % (episode.original, episode.filename_modifier()))
+                elif os.name == "posix":
+                    for episode in episode_list:
+                        os.system("mv \"%s\" \"%s\"" % (episode.original, episode.filename_modifier()))
+        elif kodi:
+            season = int(input("Season? [1,2,3,...]"))
+            for episode in episode_list:
+                print("rename ", episode.original, "\t\t", kodi_change(episode.filename_modifier(), season))
+            prompt = input("Do you wish to make this filename changes? [y/n]")
+            if prompt == "y":
+                if os.name == "nt":
+                    for episode in episode_list:
+                        os.system(
+                            "rename \"%s\" \"%s\"" % (
+                                episode.original, kodi_change(episode.filename_modifier(), season)))
+                elif os.name == "posix":
+                    for episode in episode_list:
+                        os.system(
+                            "mv \"%s\" \"%s\"" % (episode.original, kodi_change(episode.filename_modifier(), season)))
+    elif dbrequest:
+        show = input("What's the name of the show?\n")
+        season = int(input("Season? [1,2,3,...]\n"))
+        db_url = mdatabase_search(show, season)
+        episode_txt = site_scanner(db_url, class_="no_click open").split("\n")
+        if not kodi:
+            for i in range(len(episode_list)):
+                print("rename ", episode_list[i].original, "\t\t", episode_txt[i] + "." + episode_list[i].formato)
+            prompt = input("Do you wish to make this filename changes? [y/n]")
+            if prompt == "y":
+                if os.name == "nt":
+                    for i in range(len(episode_list)):
+                        os.system("rename \"%s\" \"%s\"" % (
+                            episode_list[i].original, episode_txt[i] + "." + episode_list[i].formato))
+                elif os.name == "posix":
+                    for i in range(len(episode_list)):
+                        os.system("mv \"%s\" \"%s\"" % (
+                            episode_list[i].original, episode_txt[i] + "." + episode_list[i].formato))
+        elif kodi:
+            for i in range(len(episode_list)):
+                print("rename ", episode_list[i].original, "\t\t",
+                      kodi_change(episode_txt[i] + "." + episode_list[i].formato, season))
+            prompt = input("Do you wish to make this filename changes? [y/n]")
+            if prompt == "y":
+                if os.name == "nt":
+                    for i in range(len(episode_list)):
+                        os.system("rename \"%s\" \"%s\"" % (
+                            episode_list[i].original,
+                            kodi_change(episode_txt[i] + "." + episode_list[i].formato, season)))
+                elif os.name == "posix":
+                    for i in range(len(episode_list)):
+                        os.system("mv \"%s\" \"%s\"" % (
+                            episode_list[i].original,
+                            kodi_change(episode_txt[i] + "." + episode_list[i].formato, season)))

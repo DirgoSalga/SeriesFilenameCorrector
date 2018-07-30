@@ -8,12 +8,11 @@ Created on Wed May 30 14:01:04 2018
 from selenium import webdriver
 import webbrowser
 
-driver = r"D:\Dirgo\Documents\Web Drivers\chromedriver_win32\chromedriver.exe"
-# driver = r"D:\Dirgo\Documents\Web Drivers\phantomjs-2.1.1-windows\phantomjs-2.1.1-windows\bin\phantomjs.exe"
+# driver = r"D:\Dirgo\Documents\Web Drivers\chromedriver_win32\chromedriver.exe"
 
 
 def mdatabase_search(input_text, season, tv=True):
-    browser = webdriver.Chrome(driver)
+    browser = webdriver.Firefox()
     browser.get(r"https://www.themoviedb.org/")
     search_field = browser.find_element_by_id("search_v4")
 

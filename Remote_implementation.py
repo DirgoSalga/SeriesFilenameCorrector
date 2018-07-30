@@ -16,6 +16,7 @@ def platzhalter(pfad):
 if __name__ == "__main__":
     test = platzhalter(*argv[1:])
 
+    os.system("export DISPLAY:=0")
     os.chdir(test)
 
     lista = episode_list_maker(test)

@@ -23,6 +23,6 @@ if __name__ == "__main__":
     tail = tail_finder(lista)
 
     instances_list = [EpisodeFilename(i, head, shift, tail, splitter) for i in lista]
-    make_change(instances_list, kodi=True)
+    make_change(instances_list, kodi=True, dbrequest=True)
     # for instance in instances_list:
     #     print("mv \"%s\" \"%s\"" % (instance.original, kodi_change(instance.original, 2)))

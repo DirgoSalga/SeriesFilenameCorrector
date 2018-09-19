@@ -19,16 +19,17 @@ class EpisodeFilename:
         self.key1 = head  # string
         self.key2 = tail  # string
         self.shift = shift  # int
-        self.sep = splitter  # str
-        self.formato = self.original.split(".")[-1]  # str
+        self.sep = splitter  # string
+        self.formato = self.original.split(".")[-1]  # string
 
     def filename_modifier(self):
         ind1 = self.original.find(self.key1) + self.shift
         ind2 = self.original.find(self.key2)
         if ind2 == -1:
-            short = self.original[ind1:]
+            no_format = self.original[:self.original.find(self.formato) - 1]  # -1 because of the dot
+            short = no_format[ind1:]
         else:
-            short = self.original[ind1:ind2]
+            short = self.original[ind1:ind2 - 1]  # Eliminate the separator at the end
         words = short.split(self.sep)
         new = "%s" % words[0]
         for word in words[1:-1]:
@@ -36,7 +37,7 @@ class EpisodeFilename:
                 new += " " + word
             else:
                 new += " " + word.capitalize()
-        new += "%s.%s" % (words[-1], self.formato)
+        new += " %s.%s" % (words[-1], self.formato)
         return new
 
 
@@ -96,76 +97,104 @@ def header_finder(file_list):
     have in common and can be trimmed off the final result."""
 
     sep_symbol = sep_finder(file_list)
-    for i in range(1, len(file_list)):
-        a = file_list[i - 1].split(sep_symbol)
-        b = file_list[i].split(sep_symbol)
+    same_index_list = list()
+    for i in range(len(file_list)):
+        a = file_list[i].split(sep_symbol)
+        for m in range(len(file_list)):
+            b = file_list[m].split(sep_symbol)
 
-        """This is the index of the last word that is identical in all filenames. Normally is the next one is the one I
-        am really interested in"""
-        same_to_index = 0
+            """This is the index of the last word that is identical in all filenames. Normally is the next one is the one I
+            am really interested in"""
+            same_to_index_running = 0
 
-        if len(a) >= len(b):
-            for j in range(1, len(a)):
-                if a[j] == b[j]:
-                    same_to_index += 1
-                else:
-                    break
-        else:
-            for j in range(1, len(b)):
-                if a[j] == b[j]:
-                    same_to_index += 1
-                else:
-                    break
+            if len(a) <= len(b):
+                for j in range(len(a)):
+                    if a[j] == b[j]:
+                        same_to_index_running += 1
+                    else:
+                        break
+            else:
+                for j in range(len(b)):
+                    if a[j] == b[j]:
+                        same_to_index_running += 1
+                    else:
+                        break
+            same_index_list.append(same_to_index_running)
+    same_to_index = min(same_index_list) - 1  # index actually starts at 0
     """At this point I know that they are all the same until same_to_index, let's check what happens with the next word
     if we break it down even further."""
-    for k in range(1, len(file_list)):
-        a = file_list[i - 1].split(sep_symbol)[same_to_index + 1]
-        b = file_list[i].split(sep_symbol)[same_to_index + 1]
+    in_word_list = list()
+    for k in range(len(file_list)):
+        a = file_list[k].split(sep_symbol)[same_to_index + 1]
+        for n in range(len(file_list)):
+            b = file_list[n].split(sep_symbol)[same_to_index + 1]
 
-        same_to_index_in_word = 0
-        if len(a) >= len(b):
-            for l in range(1, len(a)):
-                if a[l] == b[l]:
-                    same_to_index_in_word += 1
+            same_to_index_in_word_running = 0
+            if len(a) <= len(b):
+                for l in range(len(a)):
+                    if a[l] == b[l]:
+                        same_to_index_in_word_running += 1
+                    else:
+                        break
             else:
-                break
-        else:
-            for l in range(1, len(b)):
-                if a[l] == b[l]:
-                    same_to_index_in_word += 1
-                else:
-                    break
-    """result is the portion word, after the last one that is identical on every file name, that is reapeated across all
-    files."""
-    result = file_list[2].split(sep_symbol)[same_to_index + 1][:same_to_index_in_word + 1]
-    shift = len(result)  # This is just on how much we have to shift to slice the string properly
+                for l in range(len(b)):
+                    if a[l] == b[l]:
+                        same_to_index_in_word_running += 1
+                    else:
+                        break
+            in_word_list.append(same_to_index_in_word_running)
 
+    same_to_index_in_word = min(in_word_list) - 1
+    if same_to_index_in_word == -1:
+        result = file_list[2].split(sep_symbol)[same_to_index]
+        shift = len(result) + 1  # The separator is still included in this case
+    elif same_to_index_in_word > -1:
+        result = file_list[2].split(sep_symbol)[same_to_index + 1][:same_to_index_in_word + 1]
+        shift = len(result)  # This is just on how much we have to shift to slice the string properly
     return result, shift
 
 
 def tail_finder(file_list):
     """This function is supposed to compare the endings of all filenames so it can decide which parts all filenames
         have in common and can be trimmed off the final result."""
+    file_list_no_format = list()
+    for file in file_list:
+        list_of_words = file.split(".")[:-1]
+        file_no_format = str()
+        if sep_finder(file_list) != ".":
+            for word in list_of_words:
+                file_no_format += word
+        elif sep_finder(file_list) == ".":
+            file_no_format += list_of_words[0]
+            for word in list_of_words[1:]:
+                file_no_format += "." + word
+        file_list_no_format.append(file_no_format)
+    sep_symbol = sep_finder(file_list_no_format)
+    same_index_list = list()
+    for i in range(len(file_list_no_format)):
+        a = file_list_no_format[i].split(sep_symbol)[::-1]
+        for m in range(len(file_list_no_format)):
+            b = file_list_no_format[m].split(sep_symbol)[::-1]
+            same_to_index_running = 0
 
-    sep_symbol = sep_finder(file_list)
-    for i in range(1, len(file_list)):
-        a = file_list[i - 1].split(sep_symbol)[::-1]
-        b = file_list[i].split(sep_symbol)[::-1]
-        same_to_index = 0
-
-        if len(a) >= len(b):
-            for j in range(1, len(a)):
-                if a[j] == b[j]:
-                    same_to_index += 1
-                else:
-                    break
-        else:
-            for j in range(1, len(b)):
-                if a[j] == b[j]:
-                    same_to_index += 1
-                else:
-                    break
-    result = file_list[1].split(sep_symbol)[::-1][same_to_index]
+            if len(a) <= len(b):
+                for j in range(len(a)):
+                    if a[j] == b[j]:
+                        same_to_index_running += 1
+                    else:
+                        break
+            else:
+                for j in range(len(b)):
+                    if a[j] == b[j]:
+                        same_to_index_running += 1
+                    else:
+                        break
+            same_index_list.append(same_to_index_running)
+    same_to_index = min(same_index_list) - 1
+    if same_to_index > -1:
+        result = file_list_no_format[1].split(sep_symbol)[::-1][same_to_index]
+    elif same_to_index <= -1:
+        result = "__NO_TAIL_FOUND__"
     return result
 
 

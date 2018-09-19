@@ -41,16 +41,35 @@ test2 = ['How I Met Your Mother S03E05 How I Met Everyone Else (1080p x265 Joy).
          'How I Met Your Mother S03E01 Wait for It (1080p x265 Joy).m4v',
          'How I Met Your Mother S03E14 The Bracket (1080p x265 Joy).m4v']
 
+test3 = ['S1.Ep.01.Standing.Up.in.the.Milky.Way.mp4',
+         'S1.Ep.02.Some.of.the.Things.That.Molecules.Do.mp4',
+         'S1.Ep.03.When.Knowledge.Conquered.Fear.mp4',
+         'S1.Ep.04.A Sky.Full.of.Ghost.mp4',
+         'S1.Ep.05.Hiding.In.The.Light.mp4',
+         'S1.Ep.06.Deeper.Deeper.Deeper.Still.mp4',
+         'S1.Ep.07.The.Clean.Room-muxed.mp4',
+         'S1.Ep.08.Sisters.of.the.Sun.mp4',
+         'S1.Ep.09.The.Lost.Worlds.of.Planet.Earth.mp4',
+         'S1.Ep.10.The.Electric.Boy.mp4',
+         'S1.Ep.11.The.Immortals.mp4',
+         'S1.Ep.12.The.World.Set.Free.mp4',
+         'S1.Ep.13.Unafraid.of.the.Dark.mp4']
+
 
 def create_tests(camino):
     test_path = camino + "/test"
     test_path2 = camino + "/test2"
+    test_path3 = camino + "/test3"
+
     os.mkdir(test_path)
     os.mkdir(test_path2)
+    os.mkdir(test_path3)
     for i in test:
         os.system("echo > \"%s/%s\"" % (test_path, i))
     for j in test2:
         os.system("echo > \"%s/%s\"" % (test_path2, j))
+        for k in test3:
+            os.system("echo > \"%s/%s\"" % (test_path3, k))
 
 
 if __name__ == '__main__':

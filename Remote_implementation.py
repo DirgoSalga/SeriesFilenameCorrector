@@ -39,4 +39,4 @@ if __name__ == "__main__":
     else:
         dbool = False
 
-    make_change(instances_list, kodi=decision, dbrequest=dbbool)
+    make_change(instances_list, kodi=decision, dbrequest=dbool)

@@ -22,8 +22,8 @@ if __name__ == "__main__":
     head, shift = header_finder(lista)
     tail = tail_finder(lista)
 
-    kodi_bool = input("Do you want to make the change for Kodi? [y/n]\n" == "y")
-    db_bool = input("Do you want to extract the names from an online database? [y/n]\n" == "y")
+    kodi_bool = input("Do you want to make the change for Kodi? [y/n]\n") == "y"
+    db_bool = input("Do you want to extract the names from an online database? [y/n]\n") == "y"
 
     instances_list = [EpisodeFilename(i, head, shift, tail, splitter) for i in lista]
     make_change(instances_list, kodi=kodi_bool, dbrequest=db_bool)

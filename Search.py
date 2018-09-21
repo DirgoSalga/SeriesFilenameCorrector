@@ -9,8 +9,7 @@ from selenium import webdriver
 import webbrowser
 import os
 
-driver = r"D:\Dirgo\Documents\Web Drivers\chromedriver_win32\chromedriver.exe"
-
+driver = os.getcwd() + r"\Drivers\chromedriver.exe"
 
 def mdatabase_search(input_text, season, tv=True):
     if os.name is "posix":
@@ -31,7 +30,6 @@ def mdatabase_search(input_text, season, tv=True):
             id_number = listica[-1]
             print(id_number)
         browser.close()
-        # season = int(input("Season? [1,2,3,...]\n"))
         return r"https://www.themoviedb.org/tv/%s/season/%d" % (id_number, season)
     else:
         if listica[0] == "movie":

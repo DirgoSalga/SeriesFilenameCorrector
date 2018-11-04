@@ -35,7 +35,7 @@ if __name__ == "__main__":
         decision = False
 
     if prompt2 == "y":
-        dbbool = True
+        dbool = True
     else:
         dbool = False
 

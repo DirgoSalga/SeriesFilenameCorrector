@@ -21,6 +21,7 @@ class EpisodeFilename:
         self.shift = shift  # int
         self.sep = splitter  # string
         self.formato = self.original.split(".")[-1]  # string
+        self.with_dash = None
 
     def filename_modifier(self, dashremover):
         """"dashremover [bool]: apply dash_remover method on function"""
@@ -40,7 +41,7 @@ class EpisodeFilename:
                 new += " " + word.capitalize()
         new += " %s.%s" % (words[-1], self.formato)
         if dashremover:
-            self.original = new
+            self.with_dash = new
             return self.dash_remover()
         else:
             return new
@@ -53,7 +54,7 @@ class EpisodeFilename:
             input = 01 - Pilot.mp4
             output = 01 Pilot.mp4"""
 
-        pieces = self.original.split("-")
+        pieces = self.with_dash.split("-")
         new = pieces[0].strip() + "".join(pieces[1:])
         return new
 

@@ -15,7 +15,7 @@ def site_scanner(url, **kwargs):
     soup = BeautifulSoup(html_doc, "html.parser")
     titles = soup.find_all(**kwargs)
     all_titles = ""
-    for title in titles[1::2]:
+    for title in titles[1::3]:
         all_titles += "%02d %s\n" % (int(title.attrs["episode"]), title.text.strip())
 
     return all_titles.strip()

@@ -6,11 +6,12 @@ Created on Wed May 30 14:01:04 2018
 """
 
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 import webbrowser
 import os
 
-driver = r"D:\Dirgo\Documents\Web Drivers\chromedriver_win32\chromedriver.exe"
 
+driver = os.getcwd() + r"\Drivers\chromedriver.exe"
 
 def mdatabase_search(input_text, season, tv=True):
     if os.name is "posix":
@@ -21,9 +22,10 @@ def mdatabase_search(input_text, season, tv=True):
     search_field = browser.find_element_by_id("search_v4")
 
     search_field.send_keys(input_text)
-    search_field.submit()
+    search_field.send_keys(Keys.ENTER)
 
     results = browser.find_elements_by_class_name("title")
+    print(results[0].get_attribute("id"))
     listica = results[0].get_attribute("id").split("_")
     if tv:
 
@@ -31,7 +33,6 @@ def mdatabase_search(input_text, season, tv=True):
             id_number = listica[-1]
             print(id_number)
         browser.close()
-        # season = int(input("Season? [1,2,3,...]\n"))
         return r"https://www.themoviedb.org/tv/%s/season/%d" % (id_number, season)
     else:
         if listica[0] == "movie":
@@ -43,4 +44,4 @@ def mdatabase_search(input_text, season, tv=True):
 
 if __name__ == "__main__":
     search = input("What show are you looking for?\n")
-    webbrowser.open(mdatabase_search(search, tv=False))
+    webbrowser.open(mdatabase_search(search, 5, tv=True))

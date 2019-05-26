@@ -22,7 +22,8 @@ class EpisodeFilename:
         self.sep = splitter  # string
         self.formato = self.original.split(".")[-1]  # string
 
-    def filename_modifier(self):
+    def filename_modifier(self, dashremover):
+        """"dashremover [bool]: apply dash_remover method on function"""
         ind1 = self.original.find(self.key1) + self.shift
         ind2 = self.original.find(self.key2)
         if ind2 == -1:
@@ -31,13 +32,29 @@ class EpisodeFilename:
         else:
             short = self.original[ind1:ind2 - 1]  # Eliminate the separator at the end
         words = short.split(self.sep)
-        new = "%s" % words[0]
+        new = words[0]
         for word in words[1:-1]:
             if word == "and" or word == "the" or word == "of":
                 new += " " + word
             else:
                 new += " " + word.capitalize()
         new += " %s.%s" % (words[-1], self.formato)
+        if dashremover:
+            self.original = new
+            return self.dash_remover()
+        else:
+            return new
+
+    def dash_remover(self):
+        """This function takes an already corrected filename and simply removes
+        a dash between episode number and the name of the episode.
+
+        Example:
+            input = 01 - Pilot.mp4
+            output = 01 Pilot.mp4"""
+
+        pieces = self.original.split("-")
+        new = pieces[0].strip() + "".join(pieces[1:])
         return new
 
 
@@ -206,42 +223,43 @@ def kodi_change(original, season):
     end_index = len(original) - len(formato) - 1
     sin_formato = original[:end_index]
     if season < 10:
-        new = "%s_s0%de%s.%s" % (sin_formato.strip(), season, sin_formato[:2], formato)
+        new = "%s_s0%de%s.%s" % (sin_formato.strip(), season, sin_formato[:2].strip(), formato)
     else:
-        new = "%s_s%de%s.%s" % (sin_formato.strip(), season, sin_formato[:2], formato)
+        new = "%s_s%de%s.%s" % (sin_formato.strip(), season, sin_formato[:2].strip(), formato)
     return new
 
 
-def make_change(episode_list, kodi=False, dbrequest=False):
+def make_change(episode_list, kodi=False, dbrequest=False, dashremove=False):
     """The function takes a list of instances of the EpisodeFilename class"""
 
     if not dbrequest:
         if not kodi:
             for episode in episode_list:
-                print("rename ", episode.original, "\t\t", episode.filename_modifier())
+                print("rename ", episode.original, "\t\t", episode.filename_modifier(dashremove))
             prompt = input("Do you wish to make this filename changes? [y/n]")
             if prompt == "y":
                 if os.name == "nt":
                     for episode in episode_list:
-                        os.system("rename \"%s\" \"%s\"" % (episode.original, episode.filename_modifier()))
+                        os.system("rename \"%s\" \"%s\"" % (episode.original, episode.filename_modifier(dashremove)))
                 elif os.name == "posix":
                     for episode in episode_list:
-                        os.system("mv \"%s\" \"%s\"" % (episode.original, episode.filename_modifier()))
+                        os.system("mv \"%s\" \"%s\"" % (episode.original, episode.filename_modifier(dashremove)))
         elif kodi:
             season = int(input("Season? [1,2,3,...]"))
             for episode in episode_list:
-                print("rename ", episode.original, "\t\t", kodi_change(episode.filename_modifier(), season))
+                print("rename ", episode.original, "\t\t", kodi_change(episode.filename_modifier(dashremove), season))
             prompt = input("Do you wish to make this filename changes? [y/n]")
             if prompt == "y":
                 if os.name == "nt":
                     for episode in episode_list:
                         os.system(
                             "rename \"%s\" \"%s\"" % (
-                                episode.original, kodi_change(episode.filename_modifier(), season)))
+                                episode.original, kodi_change(episode.filename_modifier(dashremove), season)))
                 elif os.name == "posix":
                     for episode in episode_list:
                         os.system(
-                            "mv \"%s\" \"%s\"" % (episode.original, kodi_change(episode.filename_modifier(), season)))
+                            "mv \"%s\" \"%s\"" % (
+                                episode.original, kodi_change(episode.filename_modifier(dashremove), season)))
     elif dbrequest:
         show = input("What's the name of the show?\n")
         season = int(input("Season? [1,2,3,...]\n"))

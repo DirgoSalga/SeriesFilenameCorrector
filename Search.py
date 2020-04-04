@@ -19,10 +19,10 @@ driver = os.getcwd() + r"\Drivers\chromedriver.exe"
 
 def mdatabase_search(input_text, season, tv=True):
     if os.name is "posix":  # headless on rpi
-        from pyvirtualdisplay import Display
-        display = Display(visible=0, size=(800, 600))
-        display.start()
-        browser = webdriver.Firefox()
+        from selenium.webdriver.firefox.options import Options as FirefoxOptions
+        opts = FirefoxOptions()
+        opts.add_argument("--headless")
+        browser = webdriver.Firefox(options=opts)
     else:
         import sys
         from selenium.webdriver.firefox.firefox_binary import FirefoxBinary

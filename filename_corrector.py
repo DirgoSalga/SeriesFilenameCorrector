@@ -230,7 +230,7 @@ def kodi_change(original, season):
     return new
 
 
-def make_change(episode_list, kodi=False, dbrequest=False, dashremove=False):
+def make_change(episode_list, kodi=False, dbrequest=False, dashremove=False, directlink=False, link=None):
     """The function takes a list of instances of the EpisodeFilename class"""
 
     if not dbrequest:
@@ -262,9 +262,12 @@ def make_change(episode_list, kodi=False, dbrequest=False, dashremove=False):
                             "mv \"%s\" \"%s\"" % (
                                 episode.original, kodi_change(episode.filename_modifier(dashremove), season)))
     elif dbrequest:
-        show = input("What's the name of the show?\n")
         season = int(input("Season? [1,2,3,...]\n"))
-        db_url = mdatabase_search(show, season)
+        if not directlink:
+            show = input("What's the name of the show?\n")
+            db_url = mdatabase_search(show, season)
+        else:
+            db_url = link
         episode_txt = site_scanner(db_url, class_="no_click open").split("\n")
         if not kodi:
             for i in range(len(episode_list)):

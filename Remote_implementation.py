@@ -29,7 +29,9 @@ if __name__ == "__main__":
 
     prompt1 = input("With additional Kodi changes?[y/n]\n")
     prompt2 = input("Do you wish to retrieve the names from an online database?[y/n]\n")
-    prompt3 = input("Do you have a direct link?[y/n]\n")
+    prompt3 = input("Remove dash between episode number and episode name?[y/n]\n")
+    prompt4 = input("Do you have a direct link?[y/n]\n")
+
     if prompt1 == "y":
         decision = True
     else:
@@ -39,11 +41,17 @@ if __name__ == "__main__":
         dbool = True
     else:
         dbool = False
+
     if prompt3 == "y":
+        chbool = True
+    else:
+        chbool = False
+
+    if prompt4 == "y":
         url = input("Link:\n")
         with_link = True
     else:
         url = None
         with_link = False
 
-    make_change(instances_list, kodi=decision, dbrequest=dbool, directlink=with_link, link=url)
+    make_change(instances_list, kodi=decision, dbrequest=dbool, directlink=with_link, link=url, dashremove=chbool)

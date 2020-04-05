@@ -29,6 +29,7 @@ if __name__ == "__main__":
 
     prompt1 = input("With additional Kodi changes?[y/n]\n")
     prompt2 = input("Do you wish to retrieve the names from an online database?[y/n]\n")
+    prompt3 = input("Remove dash between episode number and episode name?[y/n]\n")
     if prompt1 == "y":
         decision = True
     else:
@@ -38,5 +39,9 @@ if __name__ == "__main__":
         dbool = True
     else:
         dbool = False
+    if prompt3 == "y":
+        chbool = True
+    else:
+        chbool = False
 
-    make_change(instances_list, kodi=decision, dbrequest=dbool)
+    make_change(instances_list, kodi=decision, dbrequest=dbool, dashremove=chbool)

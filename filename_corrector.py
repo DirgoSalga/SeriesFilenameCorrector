@@ -237,7 +237,7 @@ def make_change(episode_list, kodi=False, dbrequest=False, dashremove=False, dir
         if not kodi:
             for episode in episode_list:
                 print("rename ", episode.original, "\t\t", episode.filename_modifier(dashremove))
-            prompt = input("Do you wish to make this filename changes? [y/n]")
+            prompt = input("Do you wish to make these filename changes? [y/n]")
             if prompt == "y":
                 if os.name == "nt":
                     for episode in episode_list:
@@ -249,7 +249,7 @@ def make_change(episode_list, kodi=False, dbrequest=False, dashremove=False, dir
             season = int(input("Season? [1,2,3,...]"))
             for episode in episode_list:
                 print("rename ", episode.original, "\t\t", kodi_change(episode.filename_modifier(dashremove), season))
-            prompt = input("Do you wish to make this filename changes? [y/n]")
+            prompt = input("Do you wish to make these filename changes? [y/n]")
             if prompt == "y":
                 if os.name == "nt":
                     for episode in episode_list:
@@ -272,7 +272,7 @@ def make_change(episode_list, kodi=False, dbrequest=False, dashremove=False, dir
         if not kodi:
             for i in range(len(episode_list)):
                 print("rename ", episode_list[i].original, "\t\t", episode_txt[i] + "." + episode_list[i].formato)
-            prompt = input("Do you wish to make this filename changes? [y/n]")
+            prompt = input("Do you wish to make these filename changes? [y/n]")
             if prompt == "y":
                 if os.name == "nt":
                     for i in range(len(episode_list)):
@@ -286,7 +286,7 @@ def make_change(episode_list, kodi=False, dbrequest=False, dashremove=False, dir
             for i in range(len(episode_list)):
                 print("rename ", episode_list[i].original, "\t\t",
                       kodi_change(episode_txt[i] + "." + episode_list[i].formato, season))
-            prompt = input("Do you wish to make this filename changes? [y/n]")
+            prompt = input("Do you wish to make these filename changes? [y/n]")
             if prompt == "y":
                 if os.name == "nt":
                     for i in range(len(episode_list)):

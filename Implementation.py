@@ -14,7 +14,7 @@ if __name__ == "__main__":
     master.withdraw()
     test = askdirectory(title="Choose the folder that contains the season you want to correct")
 
-    os.chdir(test)
+    # os.chdir(test)
 
     lista = episode_list_maker(test)
 

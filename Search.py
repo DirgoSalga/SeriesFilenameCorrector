@@ -14,8 +14,6 @@ from selenium.common.exceptions import TimeoutException
 import webbrowser
 import os
 
-driver = os.getcwd() + r"\Drivers\chromedriver.exe"
-
 
 def mdatabase_search(input_text, season, tv=True):
     if os.name is "posix":  # headless on rpi
@@ -24,11 +22,11 @@ def mdatabase_search(input_text, season, tv=True):
         opts.add_argument("--headless")
         browser = webdriver.Firefox(options=opts)
     else:
-        import sys
-        from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
-        binary = FirefoxBinary('C:\\Program Files\\Mozilla Firefox\\firefox.exe', log_file=sys.stdout)
-        browser = webdriver.Firefox(firefox_binary=binary)
+        driver = os.getcwd() + r"\Drivers\chromedriver.exe"
+        browser = webdriver.Chrome(driver)
     browser.get(r"https://www.themoviedb.org/")
+    lupa = browser.find_element_by_class_name("search")
+    lupa.click()
     search_field = browser.find_element_by_id("search_v4")
 
     search_field.send_keys(input_text)
@@ -38,11 +36,9 @@ def mdatabase_search(input_text, season, tv=True):
             expected_conditions.presence_of_all_elements_located((By.CLASS_NAME, "result")))
     except TimeoutException:
         print("Took too long to load page...")
-    # results = browser.find_elements_by_class_name("title")
     print(results[0].get_attribute("id"))
-    listica = results[0].get_attribute("id").split("_")
+    listica = results[0].get_attribute("href").split("?")[0].split("/")[-2:]
     if tv:
-
         if listica[0] == "tv":
             id_number = listica[-1]
             print(id_number)

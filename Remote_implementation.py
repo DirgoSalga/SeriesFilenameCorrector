@@ -6,6 +6,7 @@ Created on Wed May 30 10:50:20 2018
 """
 from sys import argv
 import os
+import json
 from filename_corrector import *
 
 
@@ -15,6 +16,10 @@ def platzhalter(pfad):
 
 if __name__ == "__main__":
     test = platzhalter(*argv[1:])
+
+    with open('secrets.json', 'r') as secretsfile:
+        secret_dict = json.load(secretsfile)
+    secret_key = secret_dict['API']
 
     os.system("export DISPLAY:=0")
     os.chdir(test)
@@ -27,16 +32,7 @@ if __name__ == "__main__":
 
     instances_list = [EpisodeFilename(i, head, shift, tail, splitter) for i in lista]
 
-    prompt1 = input("With additional Kodi changes?[y/n]\n")
-    prompt2 = input("Do you wish to retrieve the names from an online database?[y/n]\n")
-    if prompt1 == "y":
-        decision = True
-    else:
-        decision = False
+    prompt1 = input("With additional Kodi changes?[y/n]\n").minimize() == "y"
+    prompt2 = input("Do you wish to retrieve the names from an online database?[y/n]\n").minimize() == "y"
 
-    if prompt2 == "y":
-        dbool = True
-    else:
-        dbool = False
-
-    make_change(instances_list, kodi=decision, dbrequest=dbool)
+    make_change(instances_list, kodi=prompt1, dbrequest=prompt2, api_secret=secret_key)

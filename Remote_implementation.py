@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     instances_list = [EpisodeFilename(i, head, shift, tail, splitter) for i in lista]
 
-    prompt1 = input("With additional Kodi changes?[y/n]\n").minimize() == "y"
-    prompt2 = input("Do you wish to retrieve the names from an online database?[y/n]\n").minimize() == "y"
+    prompt1 = input("With additional Kodi changes?[y/n]\n").lower() == "y"
+    prompt2 = input("Do you wish to retrieve the names from an online database?[y/n]\n").lower() == "y"
 
     make_change(instances_list, kodi=prompt1, dbrequest=prompt2, api_secret=secret_key)

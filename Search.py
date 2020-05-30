@@ -1,61 +1,45 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed May 30 14:01:04 2018
+Created on Sat May 30 09:01:04 2020
 
 @author:Dirgo
 """
 
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions
-from selenium.webdriver.common.by import By
-from selenium.common.exceptions import TimeoutException
 import webbrowser
-import os
+import tmdbsimple as db
+import json
 
-driver = os.getcwd() + r"\Drivers\chromedriver.exe"
 
-
-def mdatabase_search(input_text, season, tv=True):
-    if os.name is "posix":  # headless on rpi
-        from pyvirtualdisplay import Display
-        display = Display(visible=0, size=(800, 600))
-        display.start()
-        browser = webdriver.Firefox()
-    else:
-        import sys
-        from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
-        binary = FirefoxBinary('C:\\Program Files\\Mozilla Firefox\\firefox.exe', log_file=sys.stdout)
-        browser = webdriver.Firefox(firefox_binary=binary)
-    browser.get(r"https://www.themoviedb.org/")
-    search_field = browser.find_element_by_id("search_v4")
-
-    search_field.send_keys(input_text)
-    search_field.send_keys(Keys.ENTER)
-    try:
-        results = WebDriverWait(browser, 10).until(
-            expected_conditions.presence_of_all_elements_located((By.CLASS_NAME, "result")))
-    except TimeoutException:
-        print("Took too long to load page...")
-    # results = browser.find_elements_by_class_name("title")
-    print(results[0].get_attribute("id"))
-    listica = results[0].get_attribute("id").split("_")
+def db_search(title, secret_key, tv=True):
+    """
+    Finds the title in TMDB and returns the id code.
+    :param title: <str> title of the series or movie
+    :param tv: <bool> True if tv show, false if movie.
+    :return: <int> id code
+    """
+    db.API_KEY = secret_key
+    search = db.Search()
     if tv:
-
-        if listica[0] == "tv":
-            id_number = listica[-1]
-            print(id_number)
-        browser.close()
-        return r"https://www.themoviedb.org/tv/%s/season/%d" % (id_number, season)
+        response = search.tv(query=title)
     else:
-        if listica[0] == "movie":
-            id_number = listica[-1]
-            print(id_number)
-        browser.close()
-        return r"https://www.themoviedb.org/movie/%s" % id_number
+        response = search.movie(query=title)
+    results = search.results
+    return results[0]["id"]
 
 
-if __name__ == "__main__":
-    search = input("What show are you looking for?\n")
-    webbrowser.open(mdatabase_search(search, 2, tv=True))
+def episode_list_extraction(show_id, season, secret_key):
+    """
+
+    :param show_id:
+    :param season:
+    :return:
+    """
+    db.API_KEY = secret_key
+    season_info = db.TV_Seasons(show_id, season).info()
+    episode_names = ["{0:02d} {1}".format(i + 1, x["name"]) for i, x in enumerate(season_info["episodes"])]
+    return episode_names
+
+
+if __name__ == '__main__':
+    id = db_search("Game of Thrones")
+    print(episode_list_extraction(id, 1))

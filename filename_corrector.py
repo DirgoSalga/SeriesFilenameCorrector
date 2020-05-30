@@ -6,8 +6,7 @@ Created on Tue May 29 15:51:40 2018
 """
 
 import os
-from Search import mdatabase_search
-from EpisodeListExtraction import site_scanner
+from Search import *
 
 
 class EpisodeFilename:
@@ -230,7 +229,7 @@ def kodi_change(original, season):
     return new
 
 
-def make_change(episode_list, kodi=False, dbrequest=False, dashremove=False):
+def make_change(episode_list, kodi=False, dbrequest=False, dashremove=False, api_secret=None):
     """The function takes a list of instances of the EpisodeFilename class"""
 
     if not dbrequest:
@@ -264,8 +263,8 @@ def make_change(episode_list, kodi=False, dbrequest=False, dashremove=False):
     elif dbrequest:
         show = input("What's the name of the show?\n")
         season = int(input("Season? [1,2,3,...]\n"))
-        db_url = mdatabase_search(show, season)
-        episode_txt = site_scanner(db_url, class_="no_click open").split("\n")
+        show_id = db_search(show, api_secret)
+        episode_txt = episode_list_extraction(show_id, season, api_secret)
         if not kodi:
             for i in range(len(episode_list)):
                 print("rename ", episode_list[i].original, "\t\t", episode_txt[i] + "." + episode_list[i].formato)

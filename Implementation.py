@@ -5,15 +5,18 @@ Created on Wed May 30 10:39:57 2018
 @author:Dirgo
 """
 import os
+import json
 from tkinter.filedialog import askdirectory
 from tkinter import Tk
 from filename_corrector import *
 
 if __name__ == "__main__":
+    with open('secrets.json', 'r') as secretsfile:
+        secret_dict = json.load(secretsfile)
+    secret_key = secret_dict['API']
     master = Tk()
     master.withdraw()
     test = askdirectory(title="Choose the folder that contains the season you want to correct")
-
     os.chdir(test)
 
     lista = episode_list_maker(test)
@@ -27,6 +30,10 @@ if __name__ == "__main__":
     dash_change = input("Do you want to remove an extra dash between number and name? [y/n]\n") == "y"
 
     instances_list = [EpisodeFilename(i, head, shift, tail, splitter) for i in lista]
-    make_change(instances_list, kodi=kodi_bool, dbrequest=db_bool, dashremove=dash_change)
+    if db_bool:
+        api = secret_key
+    else:
+        api = None
+    make_change(instances_list, kodi=kodi_bool, dbrequest=db_bool, dashremove=dash_change, api_secret=api)
     # for instance in instances_list:
     #     print("mv \"%s\" \"%s\"" % (instance.original, kodi_change(instance.original, 2)))

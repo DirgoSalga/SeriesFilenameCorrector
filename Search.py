@@ -41,5 +41,10 @@ def episode_list_extraction(show_id, season, secret_key):
 
 
 if __name__ == '__main__':
-    id = db_search("Game of Thrones")
-    print(episode_list_extraction(id, 1))
+    with open('secrets.json', 'r') as secretsfile:
+        secret_dict = json.load(secretsfile)
+    secret_key = secret_dict['API']
+    series_name = input("What series?\n")
+    season = input("What season?\n")
+    id = db_search(series_name, secret_key)
+    print(episode_list_extraction(id, int(season), secret_key))
